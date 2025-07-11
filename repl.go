@@ -5,18 +5,24 @@ import (
 	"fmt"
 	"os"
 	"strings"
+
+	"github.com/GircysRomualdas/pokedexcli/internal/pokeapi"
 )
 
 type cliCommand struct {
 	name        string
 	description string
-	callback    func() error
+	callback    func(config *config) error
 }
 
-func startRepl() {
-	scanner := bufio.NewScanner(os.Stdin)
+type config struct {
+	next          string
+	previous      string
+	pokeapiClient pokeapi.Client
+}
 
-	commands := map[string]cliCommand{
+func getCommands() map[string]cliCommand {
+	return map[string]cliCommand{
 		"exit": {
 			name:        "exit",
 			description: "Exit the Pokedex",
@@ -27,13 +33,28 @@ func startRepl() {
 			description: "Displays a help message",
 			callback:    commandHelp,
 		},
+		"map": {
+			name:        "map",
+			description: "Displays a map of the Pokedex",
+			callback:    commandMapf,
+		},
+		"mapb": {
+			name:        "map_back",
+			description: "Get the previous map of the Pokedex",
+			callback:    commandMapb,
+		},
 	}
+}
+
+func startRepl(config *config) {
+	scanner := bufio.NewScanner(os.Stdin)
+
+	commands := getCommands()
 
 	for {
 		fmt.Fprint(os.Stderr, "Pokedex > ")
 		scanner.Scan()
-		rawInput := scanner.Text()
-		sliceInput := cleanInput(rawInput)
+		sliceInput := cleanInput(scanner.Text())
 		if len(sliceInput) == 0 {
 			continue
 		}
@@ -42,24 +63,10 @@ func startRepl() {
 			fmt.Fprint(os.Stderr, "Unknown command\n")
 			continue
 		}
-		command.callback()
+		if err := command.callback(config); err != nil {
+			fmt.Fprintf(os.Stderr, "%v\n", err)
+		}
 	}
-}
-
-func commandExit() error {
-	fmt.Print("Closing the Pokedex... Goodbye!\n")
-	os.Exit(0)
-	return nil
-}
-
-func commandHelp() error {
-	fmt.Print(`Welcome to the Pokedex!
-Usage:
-
-help: Displays a help message
-exit: Exit the Pokedex
-`)
-	return nil
 }
 
 func cleanInput(text string) []string {
