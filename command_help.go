@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-func commandHelp(config *config) error {
+func commandHelp(config *config, args []string) error {
 	commands := getCommands()
 	commandList := ""
 	for name, command := range commands {

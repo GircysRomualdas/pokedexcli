@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-func commandMapf(config *config) error {
+func commandMapf(config *config, args []string) error {
 	locationArea, err := config.pokeapiClient.ListLocations(config.next)
 	if err != nil {
 		return err
@@ -19,7 +19,7 @@ func commandMapf(config *config) error {
 	return nil
 }
 
-func commandMapb(config *config) error {
+func commandMapb(config *config, args []string) error {
 	if config.previous == "" {
 		return fmt.Errorf("you're on the first page")
 	}

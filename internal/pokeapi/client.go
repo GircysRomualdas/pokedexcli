@@ -16,16 +16,6 @@ type Client struct {
 	cache      *pokecache.Cache
 }
 
-type LocationArea struct {
-	Count    int    `json:"count"`
-	Next     string `json:"next"`
-	Previous string `json:"previous"`
-	Results  []struct {
-		Name string `json:"name"`
-		Url  string `json:"url"`
-	} `json:"results"`
-}
-
 func NewClient(timeout time.Duration, cache *pokecache.Cache) Client {
 	return Client{
 		httpClient: http.Client{
