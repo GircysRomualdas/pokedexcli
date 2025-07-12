@@ -6,7 +6,7 @@ import (
 
 func commandExplore(config *config, args []string) error {
 	if len(args) == 0 {
-		return fmt.Errorf("explore requires an argument")
+		return fmt.Errorf("explore requires an location name")
 	}
 
 	areaName := args[0]
